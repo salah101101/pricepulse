@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PricePulse Dashboard</title>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --border-color: #30363d;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --accent-green: #238636;
+            --accent-green-hover: #2ea043;
+            --accent-red: #da3633;
+            --badge-green-bg: rgba(35, 134, 54, 0.2);
+            --badge-green-text: #3fb950;
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-stack);
+            line-height: 1.5;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+        }
+
+        .brand-title {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-subtitle {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .btn {
+            background-color: var(--accent-green);
+            color: #ffffff;
+            border: 1px solid rgba(240, 246, 252, 0.1);
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-green-hover);
+        }
+
+        .btn-danger {
+            background-color: transparent;
+            color: var(--accent-red);
+            border: 1px solid var(--border-color);
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background-color: rgba(218, 54, 51, 0.1);
+            border-color: var(--accent-red);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        .add-form {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .input-group-small {
+            width: 140px;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #58a6ff;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .product-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-header {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .product-image {
+            width: 64px;
+            height: 64px;
+            border-radius: 6px;
+            background-color: var(--bg-tertiary);
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .product-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-title:hover {
+            color: #58a6ff;
+        }
+
+        .price-section {
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+            margin-top: auto;
+        }
+
+        .current-price {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .previous-price {
+            color: var(--text-secondary);
+            text-decoration: line-through;
+            font-size: 13px;
+            margin-left: 8px;
+        }
+
+        .badge-discount {
+            background-color: var(--badge-green-bg);
+            color: var(--badge-green-text);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 4px;
+        }
+
+        .status-instock { background-color: var(--badge-green-text); }
+        .status-outstock { background-color: var(--accent-red); }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px;
+            color: var(--text-secondary);
+        }
+
+        .status-banner {
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .status-banner.success {
+            background-color: rgba(35, 134, 54, 0.15);
+            border: 1px solid var(--badge-green-text);
+            color: var(--badge-green-text);
+            display: block;
+        }
+        .status-banner.error {
+            background-color: rgba(218, 54, 51, 0.15);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <div class="brand-title">PricePulse</div>
+                <div class="brand-subtitle">Automated e-commerce price monitor</div>
+            </div>
+            <div>
+                <button class="btn" id="checkBtn" onclick="runPriceCheck()">Check All Now</button>
+            </div>
+        </header>
+
+        <div id="statusBanner" class="status-banner"></div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Monitored Items</div>
+                <div class="stat-value">{{ items|length }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Active Price Drops</div>
+                <div class="stat-value">{{ drops_count }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Default Alert Threshold</div>
+                <div class="stat-value">-{{ default_threshold }}%</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Track New Product</div>
+            <form class="add-form" onsubmit="addProduct(event)">
+                <div class="input-group">
+                    <input type="text" id="productUrl" placeholder="Enter product URL (Amazon, Shopify, WooCommerce...)" required>
+                </div>
+                <div class="input-group-small">
+                    <input type="number" id="threshold" placeholder="Drop % (10)" min="1" max="99" step="0.5">
+                </div>
+                <button type="submit" class="btn">Track Product</button>
+            </form>
+        </div>
+
+        <div class="card-title">Monitored Products</div>
+
+        {% if items %}
+        <div class="products-grid">
+            {% for item in items %}
+            <div class="product-card">
+                <div>
+                    <div class="product-header">
+                        {% if item.image_url %}
+                        <img src="{{ item.image_url }}" alt="Product" class="product-image">
+                        {% else %}
+                        <div class="product-image" style="display:flex;align-items:center;justify-content:center;color:#8b949e;font-size:10px;">No Image</div>
+                        {% endif %}
+                        <div>
+                            <a href="{{ item.url }}" target="_blank" class="product-title" title="{{ item.name }}">{{ item.name }}</a>
+                            <div style="font-size:11px;color:#8b949e;margin-top:4px;">Threshold: -{{ item.threshold }}%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="price-section">
+                    <div>
+                        <span class="current-price">{{ item.last_price }} {{ item.currency }}</span>
+                        {% if item.discount_percent and item.discount_percent > 0 %}
+                        <span class="previous-price">{{ item.initial_price }}</span>
+                        <span class="badge-discount">-{{ item.discount_percent }}%</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="meta-row">
+                        <div>
+                            {% if item.in_stock %}
+                            <span class="status-dot status-instock"></span> In Stock
+                            {% else %}
+                            <span class="status-dot status-outstock"></span> Out of Stock
+                            {% endif %}
+                        </div>
+                        <button class="btn-danger" onclick="deleteProduct('{{ item.url }}')">Remove</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="card empty-state">
+            <p>No products currently monitored. Use the form above to track your first item.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function showBanner(message, isSuccess = true) {
+            const b = document.getElementById("statusBanner");
+            b.className = "status-banner " + (isSuccess ? "success" : "error");
+            b.innerText = message;
+            setTimeout(() => { b.style.display = "none"; }, 5000);
+        }
+
+        async function addProduct(e) {
+            e.preventDefault();
+            const url = document.getElementById("productUrl").value.trim();
+            const threshold = document.getElementById("threshold").value.trim();
+
+            if (!url) return;
+
+            const res = await fetch("/api/products", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: url, threshold: threshold ? parseFloat(threshold) : null })
+            });
+
+            if (res.ok) {
+                window.location.reload();
+            } else {
+                const err = await res.json();
+                showBanner(err.error || "Failed to add product.", false);
+            }
+        }
+
+        async function deleteProduct(url) {
+            if (!confirm("Are you sure you want to stop tracking this item?")) return;
+
+            const res = await fetch("/api/products/delete", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: url })
+            });
+
+            if (res.ok) {
+                window.location.reload();
+            } else {
+                showBanner("Failed to delete product.", false);
+            }
+        }
+
+        async function runPriceCheck() {
+            const btn = document.getElementById("checkBtn");
+            btn.disabled = true;
+            btn.innerText = "Checking...";
+
+            try {
+                const res = await fetch("/api/check", { method: "POST" });
+                if (res.ok) {
+                    showBanner("Price check completed successfully.");
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showBanner("Price check encountered an error.", false);
+                    btn.disabled = false;
+                    btn.innerText = "Check All Now";
+                }
+            } catch (err) {
+                showBanner("Network error during check.", false);
+                btn.disabled = false;
+                btn.innerText = "Check All Now";
+            }
+        }
+    </script>
+</body>
+</html>
